@@ -70,6 +70,12 @@ exports.handler = async function(event) {
   // get the documents from the query
   let sections = sectionsQuery.docs
 
+
+  // declare course rating and review varibalbes
+  var sectionNumOfReviews =[]
+  var sectionSumOfRating =0
+  var courseNumOfReviews = 0
+  
   // loop through the documents
   for (let i=0; i < sections.length; i++) {
     // get the document ID of the section
@@ -105,42 +111,41 @@ exports.handler = async function(event) {
     
     // set new Arrays as part of the return value
     sectionObject.courseReview = []
-    //sectionObject.courseRating = []
+    
+
+    // declare rating variables
+    var sumRating = 0
+    var newRating=[]
     
     // loop through all the reviews and return the reviews into the section object
     for (let j=0; j < reviews.length; j++) {
     let reviewData = reviews[j].data()
     sectionObject.courseReview[j] = reviewData.body
-    //sectionObject.courseRating[j] = reviewData.rating
-    var singleRating =[]
-    singleRating [j]= reviewData.rating
+    newRating [j]= reviewData.rating
+    sumRating += newRating[j]
     }
-    console.log(singleRating[0])
+    
     // return the number of reivews for each section
     sectionObject.numberOfReviews = reviews.length
     
     // calculate average rating of the section
-    var sectionNumOfReviews =[]
+   
     sectionNumOfReviews [i] = reviews.length
 
     // return average rating of the section
 
-    let avgRating = 10/sectionNumOfReviews [i]
-    sectionObject.averageRating = avgRating
-   // console.log(sectionNumOfReviews [i])
-
-
-
-
+    sectionObject.averageRating = sumRating/sectionNumOfReviews [i]
+   
+   // aggregate section number of reviews and rating
+    courseNumOfReviews += sectionNumOfReviews [i]
+    sectionSumOfRating += sumRating
   }
 
   // return the number of reivews for the course
-  returnValue.courseNumberOfReviews = 5
-    
-   // calculate average rating of the course
+  returnValue.courseNumberOfReviews = courseNumOfReviews
 
-   // return average rating of the course
-   returnValue.courseAverageRating= 4.85
+   // calculate average rating of the course and return it
+   returnValue.courseAverageRating= sectionSumOfRating/courseNumOfReviews
 
 
   
